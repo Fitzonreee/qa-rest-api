@@ -12,8 +12,8 @@ db.on("error", function(err) {
 
 db.once("open", function() {
   console.log("db connection successful");
-  // All the database communication goes here
 
+  // All the database communication goes here
   var Schema = mongoose.Schema;
   var AnimalSchema = new Schema({
     type: String,
