@@ -2,14 +2,23 @@
 
 var express = require("express");
 var router = express.Router();
+// Require Question model
+var Question = require("./models").Question;
 
 // ***** Questions Routes ***** //
 // -- strips away what was already matched in app.js --
 
 // GET /questions -- get all questions
-router.get("/", function(req, res) {
-  res.json({response: "You sent me a GET request"});
-});
+router.get("/", function(req, res, next) {
+  Question.find({})
+        .sort({createdAt: -1})
+        .exec(function(err, questions) {
+          if (err) {
+            return next(err);
+            res.json(questions);
+          }
+        });
+  });
 
 // POST /questions -- create question
 router.post("/", function(req, res) {
