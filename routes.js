@@ -5,6 +5,19 @@ var router = express.Router();
 // Require Question model
 var Question = require("./models").Question;
 
+router.param("qID", function(req, res, next, id){
+  Question.findById(req.params.qId, function(err, doc) {
+    if (err) return next(err);
+    if (!doc) {
+      err = new Error("Not Found");
+      err.status = 404;
+      return next(err);
+    }
+    req.question = doc;
+    return next();
+  });
+});
+
 // ***** Questions Routes ***** //
 // -- strips away what was already matched in app.js --
 
@@ -33,8 +46,11 @@ router.post("/", function(req, res, next) {
 });
 
 // GET /questions/:qID -- specific question
-router.get("/:qID", function(req, res) {
-  res.json({response: "You sent me a GET requestf or ID:" + req.params.qID});
+router.get("/:qID", function(req, res, next) {
+  Question.findById(req.params.qId, function(err, doc) {
+    if (err) return next(err);
+    res.json(doc);
+  });
 });
 
 // ***** Answer Routes ***** //
