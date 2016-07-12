@@ -18,28 +18,30 @@ router.param("qID", function(req, res, next, id){
   });
 });
 
+router.param("aID", function(req, res, next){
+
+});
+
 // ***** Questions Routes ***** //
 // -- strips away what was already matched in app.js --
 
 // GET /questions -- get all questions
 router.get("/", function(req, res, next) {
   Question.find({})
-        .sort({createdAt: -1})
-        .exec(function(err, questions) {
-          if (err) {
-            return next(err);
-            res.json(questions);
-          }
-        });
+    .sort({createdAt: -1})
+    .exec(function(err, questions) {
+      if (err) {
+        return next(err);
+        res.json(questions);
+      }
+  });
 });
 
 // POST /questions -- create question
 router.post("/", function(req, res, next) {
   var question = new Question(req.body);
   question.save(function(err, question) {
-    if (err) {
-      return next(err);
-    }
+    if (err) return next(err);
     res.status(201);
     res.json(question);
   });
@@ -47,20 +49,18 @@ router.post("/", function(req, res, next) {
 
 // GET /questions/:qID -- specific question
 router.get("/:qID", function(req, res, next) {
-  Question.findById(req.params.qId, function(err, doc) {
-    if (err) return next(err);
-    res.json(doc);
-  });
+  res.json(req.question);
 });
 
 // ***** Answer Routes ***** //
 
 // POST /questions/:qID/answers -- creating answer
-router.post("/:qID/answers", function(req, res) {
-  res.json({
-    response: "You sent me a POST request to /answers",
-    questionId: req.body.qID,
-    body: req.body
+router.post("/:qID/answers", function(req, res, next) {
+  req.question.answers.push(req.body);
+  req.question.save(function(err, question) {
+    if (err) return next(err);
+    res.status(201);
+    res.json(question);
   });
 });
 
